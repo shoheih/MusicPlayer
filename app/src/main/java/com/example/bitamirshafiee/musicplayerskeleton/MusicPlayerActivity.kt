@@ -13,6 +13,7 @@ import android.provider.MediaStore
 import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
+import android.widget.SeekBar
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_music_player.*
 import java.util.concurrent.TimeUnit
@@ -44,7 +45,46 @@ class MusicPlayerActivity : AppCompatActivity(), ItemClicked {
         fab_play.setOnClickListener {
 
             play(currPosition)
+
         }
+
+        fab_next.setOnClickListener {
+
+            mediaplayer?.stop()
+            state = false
+            if (currPosition < musicList.size - 1)
+                currPosition += 1
+            play(currPosition)
+
+        }
+
+        fab_previous.setOnClickListener {
+
+            mediaplayer?.stop()
+            state = false
+            if (currPosition > 0)
+                currPosition -= 1
+            play(currPosition)
+
+        }
+
+        seek_bar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+
+                if (fromUser) {
+                    mediaplayer?.seekTo(progress*1000)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+        })
     }
 
     private fun play(currPosition: Int) {
