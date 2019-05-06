@@ -2,6 +2,9 @@ package com.example.bitamirshafiee.musicplayerskeleton
 
 import android.content.pm.PackageManager
 import android.database.Cursor
+import android.media.AudioManager
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -14,9 +17,14 @@ import kotlinx.android.synthetic.main.activity_music_player.*
 
 class MusicPlayerActivity : AppCompatActivity() {
 
+    private var mediaplayer: MediaPlayer? = null
     private lateinit var musicList: MutableList<Music>
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: MusicAdapter
+    private var currPosition: Int = 0
+    private var state = false
+    //false -> stopped
+    //true -> play
 
     companion object {
         private const val REQUEST_CODE_READ_EXTERNAL_STORAGE = 1
@@ -30,6 +38,34 @@ class MusicPlayerActivity : AppCompatActivity() {
 
         if (Build.VERSION.SDK_INT >= 23)
             checkPermissions()
+
+        fab_play.setOnClickListener {
+
+            play(currPosition)
+        }
+    }
+
+    private fun play(currPosition: Int) {
+
+        if (!state) {
+            fab_play.setImageDrawable(resources.getDrawable(R.drawable.ic_stop))
+
+            state = true
+
+            mediaplayer = MediaPlayer().apply {
+
+                setAudioStreamType(AudioManager.STREAM_MUSIC)
+                setDataSource(this@MusicPlayerActivity, Uri.parse(musicList[currPosition].songUri))
+                prepare()
+                start()
+            }
+
+        } else {
+            state = false
+            mediaplayer?.stop()
+            fab_play.setImageDrawable(resources.getDrawable(R.drawable.ic_play_arrow))
+        }
+
     }
 
     private fun getSongs() {
