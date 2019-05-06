@@ -8,12 +8,14 @@ import android.net.Uri
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
 import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_music_player.*
+import java.util.concurrent.TimeUnit
 
 class MusicPlayerActivity : AppCompatActivity(), ItemClicked {
 
@@ -60,12 +62,48 @@ class MusicPlayerActivity : AppCompatActivity(), ItemClicked {
                 start()
             }
 
+            val mHandler = Handler()
+
+            this@MusicPlayerActivity.runOnUiThread(object: Runnable{
+
+                override fun run() {
+                    val playerPosition = mediaplayer?.currentPosition!! / 1000
+                    val totalDuration = mediaplayer?.duration!! / 1000
+
+                    seek_bar.max = totalDuration
+                    seek_bar.progress = playerPosition
+
+                    past_text_view.text = timerFormat(playerPosition.toLong())
+                    remain_text_view.text = timerFormat((totalDuration - playerPosition).toLong())
+
+                    mHandler.postDelayed(this, 1000)
+                }
+            })
+
         } else {
             state = false
             mediaplayer?.stop()
             fab_play.setImageDrawable(resources.getDrawable(R.drawable.ic_play_arrow))
         }
 
+    }
+
+    // 00:30
+    // 01:15
+    fun timerFormat(time: Long): String {
+
+        //100/60 = 01
+        val result = String.format("%02d:%02d", TimeUnit.SECONDS.toMinutes(time),
+            TimeUnit.SECONDS.toSeconds(time) - TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(time)))
+        //100
+        //100 - (1*60) = 40
+        //01:40
+        var convert = ""
+
+        for (i in 0 until result.length)
+            convert += result[i]
+
+        return convert
     }
 
     private fun getSongs() {
