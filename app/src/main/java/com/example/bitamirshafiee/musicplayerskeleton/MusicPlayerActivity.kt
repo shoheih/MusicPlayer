@@ -15,7 +15,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_music_player.*
 
-class MusicPlayerActivity : AppCompatActivity() {
+class MusicPlayerActivity : AppCompatActivity(), ItemClicked {
 
     private var mediaplayer: MediaPlayer? = null
     private lateinit var musicList: MutableList<Music>
@@ -90,7 +90,7 @@ class MusicPlayerActivity : AppCompatActivity() {
 
         linearLayoutManager = LinearLayoutManager(this)
 
-        adapter = MusicAdapter(musicList)
+        adapter = MusicAdapter(musicList, this)
 
         recycler_view.layoutManager = linearLayoutManager
 
@@ -126,5 +126,14 @@ class MusicPlayerActivity : AppCompatActivity() {
             }
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
+    }
+
+    //ItemClicked#itemClicked
+    override fun itemClicked(position: Int) {
+
+        mediaplayer?.stop()
+        state = false
+        this.currPosition = position
+        play(currPosition)
     }
 }

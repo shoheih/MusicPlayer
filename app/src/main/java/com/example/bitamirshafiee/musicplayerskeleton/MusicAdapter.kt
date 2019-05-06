@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
-class MusicAdapter(var musicList: MutableList<Music>): RecyclerView.Adapter<MusicAdapter.MusicViewHolder>() {
+class MusicAdapter(private var musicList: MutableList<Music>, private var itemClicked: ItemClicked): RecyclerView.Adapter<MusicAdapter.MusicViewHolder>() {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, p1: Int): MusicViewHolder {
 
@@ -30,7 +30,7 @@ class MusicAdapter(var musicList: MutableList<Music>): RecyclerView.Adapter<Musi
         holder.bindMusic(item)
     }
 
-    class MusicViewHolder(v: View): RecyclerView.ViewHolder(v), View.OnClickListener {
+    inner class MusicViewHolder(v: View): RecyclerView.ViewHolder(v), View.OnClickListener {
 
         private var view: View = v
         private lateinit var music: Music
@@ -52,7 +52,7 @@ class MusicAdapter(var musicList: MutableList<Music>): RecyclerView.Adapter<Musi
         }
 
         override fun onClick(v: View?) {
-
+            itemClicked.itemClicked(adapterPosition)
         }
 
     }
